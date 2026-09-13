@@ -39,6 +39,17 @@ async def eco(ctx, *, pregunta: str = None):
 
         # Extraemos el texto dentro del bloque try
         respuesta_ia = response.text
+
+        # Verificamos la respuesta de la IA
+        if not respuesta_ia:
+            await mensaje_espera.edit(content="La IA no devolvió ninguna respuesta. Intenta con otra pregunta.")
+            return
+
+        # Discord permite 2000 caracteres
+        # el primer trozo reemplaza "Pensando respuesta..." y el resto se envía en mensajes nuevos
+        await mensaje_espera.edit(content=respuesta_ia[:2000])
+        for i in range(2000, len(respuesta_ia), 2000):
+            await ctx.send(respuesta_ia[i:i + 2000])
         
     except Exception as error:
         await mensaje_espera.edit(content=f" Ocurrió un error al consultar la IA: {error}")
